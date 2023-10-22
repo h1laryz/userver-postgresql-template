@@ -1,48 +1,26 @@
 cmake_minimum_required(VERSION 3.12)
-project(pg_service_template CXX)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+include(Variables)
+
+project(${PROJECT_NAME} CXX)
 
 include(third_party/userver/cmake/SetupEnvironment.cmake)
 include(GNUInstallDirs)
 
-add_subdirectory(third_party/userver)
+# Service as library
+file(GLOB_RECURSE LIBRARY_SOURCES src/server/*.cpp)
 
-
-# Common sources
-add_library(${PROJECT_NAME}_objs OBJECT
-    src/hello.hpp
-    src/hello.cpp
-)
-target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-postgresql)
-
+add_library(${PROJECT_NAME_AS_LIBRARY} OBJECT ${LIBRARY_SOURCES})
+target_include_directories(${PROJECT_NAME_AS_LIBRARY} PUBLIC include)
+target_link_libraries(${PROJECT_NAME_AS_LIBRARY} PUBLIC userver-postgresql)
 
 # The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME_AS_LIBRARY})
 
-
-# Unit Tests
-add_executable(${PROJECT_NAME}_unittest
-    src/hello_test.cpp
-)
-target_link_libraries(${PROJECT_NAME}_unittest PRIVATE ${PROJECT_NAME}_objs userver-utest)
-add_google_tests(${PROJECT_NAME}_unittest)
-
-
-# Benchmarks
-add_executable(${PROJECT_NAME}_benchmark
-    src/hello_benchmark.cpp
-)
-target_link_libraries(${PROJECT_NAME}_benchmark PRIVATE ${PROJECT_NAME}_objs userver-ubench)
-add_google_benchmark_tests(${PROJECT_NAME}_benchmark)
-
-
-# Functional Tests
-include(UserverTestsuite)
-
-userver_testsuite_add_simple(
-    REQUIREMENTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/requirements.txt"
-)
-
+# Userver submodule
+add_subdirectory(third_party/userver)
 
 # Install
 if(DEFINED ENV{PREFIX})
@@ -67,3 +45,8 @@ file(GLOB CONFIGS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/configs/*.yaml ${CMAKE_CURRE
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${PROJECT_NAME})
 install(FILES ${CONFIGS_FILES} DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
+
+# Other projects
+add_subdirectory(tests/functional)
+add_subdirectory(tests/unit)
+add_subdirectory(tests/benchmark)

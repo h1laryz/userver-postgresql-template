@@ -1,2 +1,5 @@
 yandex-taxi-testsuite[postgresql-binary] >= 0.1.17
 websockets >= 11.0.3
+pytest >= 7.4.2
+testsuite >= 0.1.3
+
