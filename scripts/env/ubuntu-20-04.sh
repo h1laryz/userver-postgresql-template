@@ -14,5 +14,5 @@ echo "============= Installing project dependecies ============="
 pip install pyyaml ruamel.yaml argparse
 
 echo "============= Installing functional testing dependecies ============="
-pip install -r $BASEDIR/../tests/requirements.txt
+pip install -r $BASEDIR/../../tests/functional/requirements.txt
 

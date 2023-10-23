@@ -22,6 +22,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME_AS_LIBRARY})
 # Userver submodule
 add_subdirectory(third_party/userver)
 
+# Functional testing
+include(UserverTestsuite)
+userver_testsuite_add_simple(
+        REQUIREMENTS "${CMAKE_SOURCE_DIR}/tests/functional/requirements.txt"
+)
+
 # Install
 if(DEFINED ENV{PREFIX})
   message(STATUS "Set install prefix: $ENV{PREFIX}")
@@ -47,6 +53,5 @@ install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT ${
 install(FILES ${CONFIGS_FILES} DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
 # Other projects
-add_subdirectory(tests/functional)
 add_subdirectory(tests/unit)
 add_subdirectory(tests/benchmark)

@@ -11,7 +11,7 @@ pytest_plugins = ['pytest_userver.plugins.postgresql']
 @pytest.fixture(scope='session')
 def service_source_dir():
     """Path to root directory service."""
-    return pathlib.Path(__file__).parent.parent
+    return pathlib.Path(__file__).parent.parent.parent
 
 
 @pytest.fixture(scope='session')
